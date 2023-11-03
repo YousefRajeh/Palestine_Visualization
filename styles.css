@@ -1,0 +1,138 @@
+/* Resetting some defaults so we can define things manually */
+body,
+h1,
+p {
+  margin: 0;
+  padding: 0;
+}
+
+/* Styling our header */
+header {
+  background-color: #000000;
+  text-align: center;
+  color: #FFFFDD;
+  height: 100px;
+}
+
+.title {
+  padding: 20px;
+}
+
+
+/* TODO Show the impact of changing the flex values */
+.left-column {
+  flex: 1; /* in tandem with other flex values in the parent div tells us how much space will be taken up by this column, in this situation 1/3*/
+  background-color: #EE2A35;
+  color: #FFFFDD;
+  display: flex;
+  /* Position things vertically in the centre */
+  align-items: center;
+  /* Position things horizontally in the centre */
+  justify-content: center;
+  padding: 20px;
+}
+
+.left-column-content {
+  /* This forces the maximum height of the div to be equal to 100 % of the view height (the current size of the screen)*/
+  /* the -150px is the size of the header and the footer combinedd */
+  /* You should be very careful when writing css like this as there are potential complications you can run into */
+  /* when using viewport units (vh) and you'll also need to be careful that if you update the height of the */
+  /* header or footer that you are sure to update the value here. */
+  /* TODO make sure the maximum height of this container never exceeds the available space */
+  /* This is again slightly janky and will have to be updated if we change the size of the header and footer */
+
+  /* TODO force the div to create a scrollbar instead of increasing its vertical height */
+  max-height: calc(100vh - 150px);
+  overflow: auto;
+}
+
+.left-column-content::-webkit-scrollbar {
+  width: 0; /* Hide the scrollbar's width */
+  height: 0; /* Hide the scrollbar's height */
+}
+
+/* TODO hide the scrollbar on the left-column-content*/
+
+.right-column {
+  flex: 2; /* in tandem with the flex:1 on left-column, means this will take up 2/3 of the available space*/
+  background-color: #FFFFFF;
+  color: #FFFFDD;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+footer {
+  position: fixed; /*force the footer to not move regardless of what else is going on on the page*/
+  bottom: 0; /* Make sure it stays at the bottom of the page */
+  background-color: #009736;
+  display: flex; /*need this to be a flex to work with justify-content/align-items*/
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 50px;
+}
+
+.arrow-button {
+  font-size: 10px;
+  padding: 2px 10px;
+  margin: 0 10px;
+  height: 25px;
+}
+
+.verse {
+  font-size: 1.55em;
+  list-style-type: none;
+  padding: 0px;
+  font-weight: 90;
+  color: #ddd;
+}
+
+svg {
+  background-color: #444;
+}
+
+.active-verse {
+  font-weight: 900;
+  color: #888888;
+}
+
+.active-line {
+  color: #FFFFDD;
+}
+
+.filler-verse {
+  height: 500px;
+}
+
+.wrapper {
+  display: flex; /* Allows us to position things inside this div with more freedom, see https://css-tricks.com/snippets/css/a-guide-to-flexbox/ for more details*/
+  flex-grow: 1; /* The div will now grow to fill the available space */
+
+  /* vh is the viewheight, you should use this VERY sparingly, this situation is ok because we're limiting what the user can do */
+  /* we'll minus 150px as this is the height we have manually defined the header and footer to be combined (100px + 50px)*/
+
+}
+
+.red-span {
+  cursor: pointer;
+}
+
+.red-text {
+  color: red;
+}
+
+.bar.highlighted-red {
+  fill: red;
+}
+
+.bar.highlighted-purple {
+  fill: purple;
+}
+
+
+/* TODO add css class to make "red" span clickable */
+
+/* TODO add css class to make red-text text red */
+
+/* TODO illustrate how to use css classes to interact with d3 elements */

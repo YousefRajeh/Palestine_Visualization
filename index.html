@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Scrollytelling Poems</title>
+    <link rel="stylesheet" type="text/css" href="styles.css" />
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+  </head>
+  <body>
+    <header>
+      <h1 class="title">Ricocheting Stones: Visualizing Palestine's Fight</h1>
+    </header>
+    <main class="wrapper">
+      <div class="left-column">
+        <div class="left-column-content">
+          <!-- TODO Add filler verse divs so that the content is centered vertically even at the start -->
+          <div class="filler-verse"></div>
+          <ul class="verse" id="verse1">
+            <li class="line" id="line1">In Palestine's heart, where troubles brew,</li>
+            <li class="line" id="line2">Children's dreams 'neath skies of endless blue.</li>
+            <li class="line" id="line3">Let data and verse together stand,</li>
+            <li class="line" id="line4">To show the world a helping hand.</li>
+          </ul>
+          
+          <ul class="verse" id="verse2">
+            <li class="line" id="line1">We witness tears, lives cut apart,</li>
+            <li class="line" id="line2">A conflict tearing at each heart.</li>
+            <li class="line" id="line3">Behind each number, stories untold,</li>
+            <li class="line" id="line4">Let empathy guide us, make hearts unfold.</li>
+          </ul>
+          
+          <ul class="verse" id="verse3">
+            <li class="line" id="line1">In this land where stories blend,</li>
+            <li class="line" id="line2">May peace and justice find their end.</li>
+            <li class="line" id="line3">Where children's stones meet guns,</li>
+            <li class="line" id="line4">Where youthful dreams meet endless runs.</li>
+          </ul>
+          
+          <ul class="verse" id="verse4">
+            <li class="line" id="line1">For children's sake, let's mend the pain,</li>
+            <li class="line" id="line2">In love's name, let peace regain.</li>
+          </ul>
+          <div classs="filler-verse"></div>
+        </div>
+      </div>
+      <div class="right-column">
+        <svg id="svg"></svg>
+      </div>
+    </main>
+    <footer>
+      <button class="arrow-button" id="backward-button">◄</button>
+      <button class="arrow-button" id="forward-button">►</button>
+    </footer>
+    <script src="main.js"></script>
+  </body>
+</html>
