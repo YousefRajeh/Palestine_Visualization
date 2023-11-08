@@ -5,6 +5,7 @@ let chartWidth;
 let chartHeight;
 let xScale;
 let yScale;
+let videocheck = false;
 const width = 1440;
 const height = 750;
 
@@ -27,7 +28,7 @@ let keyframes = [
     {
         activeVerse: 4,
         activeLines: [1,2], 
-        svgUpdate: () => drawBarChart(deathsData) 
+        svgUpdate: playYouTubeVideoInKeyframe
     }
 ]
 
@@ -54,6 +55,8 @@ async function loadData() {
 }
 
 function drawPieChart(data) {
+    svg.attr("width", 600);
+    svg.attr("height", 500);
     // Clear the current SVG content
     svg.selectAll("*").remove();
 
@@ -138,6 +141,10 @@ function drawPieChart(data) {
 }
 
 function drawBarChart(data) {
+    videocheck = false;
+    
+    svg.attr("width", 600);
+    svg.attr("height", 500);
     // Clear the current svg content
     svg.selectAll("*").remove();
     
@@ -210,6 +217,11 @@ function drawBarChart(data) {
         .attr("fill", "#FFFFDD")
         .style("font-size", "18px")   
         .text("Palestinian Fatalities Before Oct. 7th Bombings");
+
+        var container = document.getElementById('videoContainer');
+        if (container) {
+            container.innerHTML = '';
+        }    
 }
 
 async function initialise() {
@@ -221,6 +233,35 @@ async function initialise() {
 
     makeRedClickable();
 }
+
+function playYouTubeVideoInKeyframe() {
+    videocheck = true;
+    // Hide the SVG element
+    svg.attr("width", 0);
+    svg.attr("height", 0);
+
+    // Clear the current SVG content
+    svg.selectAll("*").remove();
+    
+    // Get the container element and check if it exists
+    var container = document.getElementById('videoContainer');
+    if (container) {
+     
+  
+      // Create an iframe element for the YouTube video
+      var iframe = document.createElement('iframe');
+      iframe.setAttribute('width', '600');
+      iframe.setAttribute('height', '500');
+      iframe.setAttribute('src', 'https://www.youtube.com/embed/rGVgjS98OsU?autoplay=1');
+      iframe.setAttribute('frameborder', '0');
+      iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
+      iframe.setAttribute('allowfullscreen', 'true');
+      
+      // Append the iframe to the container
+      container.appendChild(iframe);
+    }
+  }
+  
 
 function makeRedBarHoverable() {
     // Select the bar associated with the "red" value
