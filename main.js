@@ -22,21 +22,19 @@ let keyframes = [
     {
         activeVerse: 3,
         activeLines: [1,2,3,4], 
-        svgUpdate: () => drawPieChart(octSevenData) 
+        svgUpdate: () => drawBarChart(deathsData) 
     },
     {
         activeVerse: 4,
         activeLines: [1,2], 
-        svgUpdate: () => drawPieChart(octSevenData) 
+        svgUpdate: () => drawBarChart(deathsData) 
     }
 ]
-
-
-
 
 // Initialise two global variables to store the data when it is loaded
 let octSevenData;
 let displacementData;
+let deathsData;
 
 // You have to use the async keyword so that javascript knows that this function utilises promises and may not return immediately
 async function loadData() {
@@ -48,6 +46,10 @@ async function loadData() {
 
     await d3.json("data/displacement.json").then(data => {
         displacementData = data;
+    });
+
+    await d3.json("data/deaths.json").then(data => {
+        deathsData = data;
     });
 }
 
@@ -135,11 +137,80 @@ function drawPieChart(data) {
           .text(d => d);
 }
 
+function drawBarChart(data) {
+    // Clear the current svg content
+    svg.selectAll("*").remove();
+    
+    // Set up margins and graph width/height
+    const width = 600; // Updated dimensions
+    const height = 500;
+    const margin = {top: 30, right: 30, bottom: 70, left: 40};
+    chartWidth = width - margin.left - margin.right;
+    chartHeight = height - margin.top - margin.bottom;
+    
+    // Append a new group element to svg with the appropriate transformations
+    const g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
+    
+    // Create the yScale for the vertical axis
+    yScale = d3.scaleLinear()
+               .domain([0, d3.max(data, d => d.count)])
+               .range([chartHeight, 0]);
 
+    // Create the xScale for the horizontal axis
+    xScale = d3.scaleBand()
+               .domain(data.map(d => d.category))
+               .range([0, chartWidth])
+               .padding(0.1);
 
+    // Define the tooltip for the bar chart
+    const tooltip = d3.select("body").append("div")
+        .attr("class", "tooltip")
+        .style("opacity", 0);
 
+    // Append the bars for the bar chart
+    g.selectAll(".bar")
+     .data(data)
+     .enter().append("rect")
+     .attr("class", "bar")
+     .attr("x", d => xScale(d.category))
+     .attr("y", d => yScale(d.count))
+     .attr("width", xScale.bandwidth())
+     .attr("height", d => chartHeight - yScale(d.count))
+     .on("mouseover", function(event, d) {
+        tooltip.transition()
+            .duration(200)
+            .style("opacity", .9);
+        tooltip.html(`Fatalities: ${d.count}`)
+            .style("left", (event.pageX) + "px")
+            .style("top", (event.pageY - 28) + "px");
+     })
+     .on("mouseout", function(d) {
+        tooltip.transition()
+            .duration(500)
+            .style("opacity", 0);
+     });
 
+    // Add the x-axis
+    g.append("g")
+     .attr("transform", `translate(0,${chartHeight})`)
+     .call(d3.axisBottom(xScale))
+     .selectAll("text")
+       .attr("transform", "translate(-10,0)rotate(-45)")
+       .style("text-anchor", "end");
 
+    // Add the y-axis
+    g.append("g")
+     .call(d3.axisLeft(yScale));
+
+    // Add a title to the chart
+    svg.append("text")
+        .attr("x", (width / 2))             
+        .attr("y", margin.top / 2)
+        .attr("text-anchor", "middle")  
+        .attr("fill", "#FFFFDD")
+        .style("font-size", "18px")   
+        .text("Palestinian Fatalities Before Oct. 7th Bombings");
+}
 
 async function initialise() {
 
@@ -150,8 +221,6 @@ async function initialise() {
 
     makeRedClickable();
 }
-
-
 
 function makeRedBarHoverable() {
     // Select the bar associated with the "red" value
@@ -165,23 +234,6 @@ function makeRedBarHoverable() {
     });
 };
 
-function reorderBarsDescending() {
-    // Select the bar elements and retrieve the bound data
-    const bars = svg.selectAll(".bar").data();
-    
-    // Sort the data in descending order based on the 'count' property
-    bars.sort((a, b) => b.count - a.count);
-
-    // Update the xScale domain with the sorted 'colour' property
-    xScale.domain(bars.map(d => d.colour));
-
-    // Transition the bars to their new positions
-    svg.selectAll(".bar")
-       .transition()
-       .duration(700) 
-       .attr("x", d => xScale(d.colour)); // Update positions based on the new xScale domain
-}
-
 function drawDisplacementLineChart(data) {
     svg.attr("width", 600);
     svg.attr("height", 500);
@@ -191,21 +243,27 @@ function drawDisplacementLineChart(data) {
 
     // Set the dimensions and margins of the graph
     const margin = {top: 10, right: 30, bottom: 30, left: 60},
-          svgBounds = svg.node().getBoundingClientRect(),
-          width = svgBounds.width - margin.left - margin.right,
-          height = svgBounds.height - margin.top - margin.bottom;
+          width = 600 - margin.left - margin.right,
+          height = 500 - margin.top - margin.bottom;
 
     // Append a group element to the SVG with the appropriate transformation
     const chartGroup = svg.append("g")
- 
-                        .attr("transform", `translate(${margin.left},${margin.top})`);
+                          .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    // Add X axis -- it is a date format
-    const x = d3.scaleBand()
-                .domain(data.map(d => d.Year))
-                .range([0, width])
-                .padding(0.1);
+    const tooltip = d3.select("body").append("div")
+        .attr("class", "tooltip")
+        .style("opacity", 0);      
+        
+    // Convert 'Year' strings to integers
+    data.forEach(function(d) {
+        d.Year = parseInt(d.Year, 10); // Convert year from string to integer
+    });    
 
+    // Add X axis
+    const x = d3.scaleLinear()
+                .domain(d3.extent(data, d => d.Year))
+                .range([0, width]);
+                
     chartGroup.append("g")
               .attr("transform", `translate(0,${height})`)
               .call(d3.axisBottom(x));
@@ -219,93 +277,79 @@ function drawDisplacementLineChart(data) {
               .call(d3.axisLeft(y));
 
     // Add the line
+    const line = d3.line()
+                   .x(d => x(d.Year))
+                   .y(d => y(d.count));
+
     chartGroup.append("path")
               .datum(data)
               .attr("fill", "none")
               .attr("stroke", "#FFFFDD")
               .attr("stroke-width", 1.5)
-              .attr("d", d3.line()
-                            .x(d => x(d.Year) + x.bandwidth() / 2) // center the line in the band
-                            .y(d => y(d.count)));
-    
+              .attr("d", line);
+
+    // Add a transparent overlay for the tooltip
+    chartGroup.append("rect")
+              .attr("class", "overlay")
+              .attr("width", width)
+              .attr("height", height)
+              .style("fill", "none")
+              .style("pointer-events", "all")
+              .on("mousemove", mousemove)
+              .on("mouseout", function() {
+                  tooltip.style("opacity", 0);
+              });
+
+    function mousemove(event) {
+        const [mouseX, mouseY] = d3.pointer(event),
+              x0 = x.invert(mouseX),
+              i = d3.bisector(d => d.Year).left(data, x0, 1),
+              d0 = data[i - 1],
+              d1 = data[i] || d0,
+              d = x0 - d0.Year > d1.Year - x0 ? d1 : d0,
+              lineY = y(d.count);
+
+        // Check if mouseY is within a certain range from lineY
+        if (Math.abs(mouseY - lineY) <= 10) { // 10 is the sensitivity range; adjust as needed
+            tooltip.html(`Displaced: ${d.count}`)
+                   .style("left", (event.pageX) + "px")
+                   .style("top", (event.pageY - 28) + "px")
+                   .style("opacity", .9);
+        } else {
+            tooltip.style("opacity", 0);
+        }
+    }
+
+    // Add chart title
     chartGroup.append("text")
-    .attr("x", (width / 2))             
-    .attr("y", margin.top / 2)
-    .attr("text-anchor", "middle")  
-    .style("font-size", "18px") 
-    .style("text-decoration", "bold")  
-    .style("fill", "#FFFFDD")
-    .text("Palestinian Displacement (2009-2023)");     
+              .attr("x", (width / 2))             
+              .attr("y", margin.top / 2)
+              .attr("text-anchor", "middle")  
+              .style("font-size", "18px") 
+              .style("text-decoration", "bold")  
+              .style("fill", "#FFFFDD")
+              .text("Palestinian Displacement (2009-2023)");     
     
+    // Add chart subtitle for min value
     chartGroup.append("text")
-    .attr("x", (width / 6))             
-    .attr("y", margin.top / 2 + 30)
-    .attr("text-anchor", "middle")  
-    .style("font-size", "18px") 
-    .style("text-decoration", "bold")  
-    .style("fill", "#FFFFDD")
-    .text("Min: 12000");  
+              .attr("x", (width / 6))             
+              .attr("y", margin.top / 2 + 30)
+              .attr("text-anchor", "middle")  
+              .style("font-size", "18px") 
+              .style("text-decoration", "bold")  
+              .style("fill", "#FFFFDD")
+              .text("Min: 12000");  
     
+    // Add chart subtitle for max value
     chartGroup.append("text")
-    .attr("x", (width / 6))             
-    .attr("y", margin.top / 2 + 50)
-    .attr("text-anchor", "middle")  
-    .style("font-size", "18px") 
-    .style("text-decoration", "bold")  
-    .style("fill", "#FFFFDD")
-    .text("Max: 423000"); 
-}
-
-
-
-function initialiseSVGfromPie() {
-    svg.attr("width", width);
-    svg.attr("height", height);
-
-    svg.selectAll("*").remove();
-
-    const margin = { top: 30, right: 30, bottom: 50, left: 50 };
-    chartWidth = width - margin.left - margin.right;
-    chartHeight = height - margin.top - margin.bottom;
-
-    chart = svg.append("g")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-    xScale = d3.scaleBand()
-        .domain([])
-        .range([0, chartWidth])
-        .padding(0.1);
-
-    yScale = d3.scaleLinear()
-        .domain([])
-        .nice()
-        .range([chartHeight, 0]);
-
-    // Add x-axis
-    chart.append("g")
-        .attr("class", "x-axis")
-        .attr("transform", `translate(0,${chartHeight})`)
-        .call(d3.axisBottom(xScale))
-        .selectAll("text");
-
-    // Add y-axis
-    chart.append("g")
-        .attr("class", "y-axis")
-        .call(d3.axisLeft(yScale))
-        .selectAll("text");
-
-    // Add title
-    svg.append("text")
-        .attr("id", "chart-title")
-        .attr("x", width / 2)
-        .attr("y", 20)
-        .attr("text-anchor", "middle")
-        .style("font-size", "18px")
-        .style("fill", "white")
-        .text("");
-
-    drawRoseColours();    
-}       
+              .attr("x", (width / 6))             
+              .attr("y", margin.top / 2 + 50)
+              .attr("text-anchor", "middle")  
+              .style("font-size", "18px") 
+              .style("text-decoration", "bold")  
+              .style("fill", "#FFFFDD")
+              .text("Max: 423000"); 
+}     
 
 document.getElementById("forward-button").addEventListener("click", forwardClicked);
 document.getElementById("backward-button").addEventListener("click", backwardClicked);

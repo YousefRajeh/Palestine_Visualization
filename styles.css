@@ -114,6 +114,39 @@ svg {
 
 }
 
+.bar {
+  fill: #FFFFDD;
+}
+
+.bar:hover {
+  fill: #c7c7a7;
+}
+
+.axis text {
+  font: 10px sans-serif;
+}
+.tooltip {
+  position: absolute;
+  text-align: center;
+  width: 120px;
+  height: 28px;
+  padding: 2px;
+  font: 12px sans-serif;
+  background: lightsteelblue;
+  border: 0px;
+  border-radius: 8px;
+  pointer-events: none;
+  opacity: 0;
+}
+
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
 .red-span {
   cursor: pointer;
 }
