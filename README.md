@@ -47,5 +47,9 @@ The data visualizations in this project are based on several external sources. B
 - **URL**: [DCI-Palestine Report on Child Casualties](https://www.dci-palestine.org/3_760_palestinian_children_killed_twice_as_many_injured_in_gaza)
 - **Description**: DCI-Palestine offers detailed accounts of child casualties in the Gaza conflict. The report cites that 3,760 Palestinian children have been killed, with twice as many injured, painting a stark picture of the conflict's toll on the youngest and most vulnerable.
 
+## Office for the Coordination of Humanitarian Affairs (OCHA)
+- **URL**: [OCHA Casualties Database](https://www.ochaopt.org/data/casualties)
+- **Description**: The United Nations Office for the Coordination of Humanitarian Affairs (OCHA) provides a comprehensive database of casualties in the occupied Palestinian territory. The data includes detailed statistics on fatalities and injuries, categorized by year, location, and the nature of the conflict. This source is essential for a factual and up-to-date understanding of the human cost of the conflict.
+
 These sources form the basis of the data used for our visualizations and are integral to understanding the humanitarian impact of the conflict in Palestine.
 
